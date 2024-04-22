@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseURL = process.env.VITE_supabaseURL;
 const supabaseKey = process.env.VITE_supabaseKey;
-const supabase = createClient(supabaseURL, supabaseKey);
+const supabase = createClient("https://mbyzugllucwkehrgjwhr.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ieXp1Z2xsdWN3a2Vocmdqd2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM0MTg3MjgsImV4cCI6MjAyODk5NDcyOH0.r5yTEF7_NvsoGxsNxWmIFTUIxoj6G860tsECBBYhQBY");
 
 function convertToMonths(timeString) {
   const matches = timeString.match(/(\d+) (\w+)/g);
@@ -69,7 +69,7 @@ async function readAndParseCSV(){
         //releaseDate, sentenceDuration, classes
         let count = 0;
         records.forEach((record) => {
-          if (count >= 337000){
+          if (count >= 337244){
             return;
           }
           console.log(count);
