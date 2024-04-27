@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { supabase } from "../App";
 import style from './plot.module.css'; 
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { Bar } from "react-chartjs-2";
@@ -27,11 +26,11 @@ const options = {
     },
 }
 
-export default function Plot({crimesAndDegrees, setCrimesAndDegrees}) {
+
+
+export default function Plot({crimesAndDegrees, setCrimesAndDegrees, database}) {
     let params = useParams();
     let filter = params.filter;
-    let ageRanges = ['1', '3', '5', '7', '10'];
-    const [supabaseData, setSupabaseData] = useState([]);
     const [plotFilter, setPlotFilter] = useState(filter);
     const [showAgeRanges, setShowAgeRanges] = useState(false);
     const [selectedAgeRange, setSelectedAgeRange] = useState('1');
@@ -40,80 +39,46 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees}) {
     const [plotLabels, setPlotLabels] = useState([]);
     const [plotData, setPlotData] = useState({});
     const [showPlot, setShowPlot] = useState(false);
+
+
     const selectedCrimes = Object.keys(crimesAndDegrees).sort();
-    //console.log(selectedCrimes);
     const selectedDegrees = [];
+    
+    let ageRanges = ['1', '3', '5', '7', '10'];
     let multipleOffense = selectedCrimes.length > 1 ? true : false;
+
     selectedCrimes.forEach((crime) => {
         selectedDegrees.push(crimesAndDegrees[crime]);
     })
     
     const handleFilterChange = (e) =>  {
         setPlotFilter(e.target.value);
-        // console.log("This should be the filtered data: ", filteredData);
-        // console.log("This should be the plot data: ", plotObject);
+;
     }
 
     const handleAgeRangeChange = (e) => {
         setSelectedAgeRange(e.target.value);
     }
 
-    //This useEffect is used to get the data from supabase, and then filter the data based on the crimes selected, then create the plot data from the filteredData state variable
+    //This useEffect is used to update the filteredData state variable when database changes
     useEffect(() => {
-        const getData = async () => {
-            let {data, error} = await supabase.from('convictionData').select('din, sentenceDuration, aggMinSentence, aggMaxSentence, crimeArray, degreeArray, age, county, race');
-            if (error) {
-                console.error("Error: ",error)
-            }
-            //console.log(data);
-            setSupabaseData(data);
-            return data;
-        };
-        getData();
-        // //console.log("This should be the supabase data: ", supabaseData);
-        // let testFilteredData = supabaseData.filter((entry) => {
-        //     let entrySortedCrimes = entry.crimeArray.sort();
-        //     let entrySortedDegrees = entry.degreeArray.sort();
-        //     return ( JSON.stringify(entrySortedCrimes) === JSON.stringify(selectedCrimes) && JSON.stringify(entrySortedDegrees) === JSON.stringify(selectedDegrees));
-        // })
-        // setFilteredData(testFilteredData);
-        // //console.log("This should be the filtered data: ", filteredData);
-    }, [])
-
-    //This useEffect is used to update the filteredData state variable when supabaseData changes
-    useEffect(() => {
-        let testFilteredData = supabaseData.filter((entry) => {
+        let testFilteredData = database.filter((entry) => {
             let entrySortedCrimes = entry.crimeArray.sort();
             let entrySortedDegrees = entry.degreeArray.sort();
             return ( JSON.stringify(entrySortedCrimes) === JSON.stringify(selectedCrimes) && JSON.stringify(entrySortedDegrees) === JSON.stringify(selectedDegrees));
         })
-        console.log("This shoudl be the filtered data from the plot component: ", testFilteredData);
+        console.log("This shoudl be the filtered data for the plot component: ", testFilteredData);
         setFilteredData(testFilteredData);
-        // console.log("This should be the filtered data: ", filteredData);
-        //console.log("This should be the supabase data: ", supabaseData);
-        // if (plotFilter === 'age') {
-        //     if (selectedAgeRange === '1'){
-        //         const updatedPlotObject = {}
-        //         console.log("This should be filtered data: ", filteredData);
-        //         console.log("This should be the updated plot object: ", updatedPlotObject);
-        //         setPlotObject(updatedPlotObject);
-        //     }
-        // }
-    }, [supabaseData])
+    }, [])
+
 
     useEffect(() => {
-        //console.log("Plot filter just changed to: ", plotFilter);
+
         if (plotFilter === 'age') {
             setShowAgeRanges(true);
         }else{
             setShowAgeRanges(false);
         }
-    }, [plotFilter])
-
-    useEffect(() => {
-        //console.log("This is filtered data: ", filteredData);
-        //console.log("This is the selected filter: ", plotFilter);
-        //console.log("This is the selected age range: ", selectedAgeRange);
         if (plotFilter === 'age') {
             if (selectedAgeRange === '1'){
                 const updatedPlotObject = {}
@@ -127,7 +92,6 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees}) {
                         updatedPlotObject[age] = [sentenceDuration];
                     }
                 })
-                //console.log("This should be the updated plot object: ", updatedPlotObject);
                 setPlotObject(updatedPlotObject);
             }
             else if (selectedAgeRange === '3'){
@@ -199,7 +163,6 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees}) {
                         updatedPlotObject['>77'].push(sentenceDuration);
                     }
                 })
-                //console.log("This should be the updated plot object: ", updatedPlotObject);
                 setPlotObject(updatedPlotObject);
             }
             else if (selectedAgeRange === '5'){
@@ -247,7 +210,6 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees}) {
                         updatedPlotObject['>77'].push(sentenceDuration);
                     }
                 })
-                //console.log("This should be the updated plot object: ", updatedPlotObject);
                 setPlotObject(updatedPlotObject);
             }
             else if (selectedAgeRange === '7'){
@@ -286,7 +248,6 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees}) {
                         updatedPlotObject['>80'].push(sentenceDuration);
                     }
                 })
-                //console.log("This should be the updated plot object: ", updatedPlotObject);
                 setPlotObject(updatedPlotObject);
             }
             else if (selectedAgeRange === '10'){
@@ -316,7 +277,6 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees}) {
                         updatedPlotObject['>77'].push(sentenceDuration);
                     }
                 })
-                //console.log("This should be the updated plot object: ", updatedPlotObject);
                 setPlotObject(updatedPlotObject);
             }
         }
@@ -332,7 +292,6 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees}) {
                     updatedPlotObject[county] = [sentenceDuration];
                 }
             })
-            //console.log("This should be the updated plot object: ", updatedPlotObject);
             setPlotObject(updatedPlotObject);
         }
         else if (plotFilter === 'race'){
@@ -347,14 +306,12 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees}) {
                     updatedPlotObject[race] = [sentenceDuration];
                 }
             })
-            //console.log("This should be the updated plot object: ", updatedPlotObject);
             setPlotObject(updatedPlotObject);
         }
     }, [filteredData, selectedAgeRange, plotFilter])
 
     useEffect(() => {
         let myPlotLabels = Object.keys(plotObject);
-        //console.log(plotLabels);
         let finalPlotData = [];
         let plotArrays = Object.values(plotObject);
         plotArrays.map((plotArray) => {
@@ -370,11 +327,8 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees}) {
                 finalPlotData.push(average);
             }
         })
-        //console.log(finalPlotData);
         setPlotLabels(myPlotLabels);
         setPlotData({labels: myPlotLabels, datasets:[{label: 'Average Sentence Duration', data: finalPlotData, backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 1}]})
-        //console.log("These are the updated plot labels: ", plotLabels);
-        //setPlotData({plotLabels, datasets:[{label: 'Average Sentence Duration', data: Object.values(plotObject)[0], backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 1}]})
         plotLabels.length > 0 ? setShowPlot(true) : setShowPlot(false);
     }, [plotObject])
 

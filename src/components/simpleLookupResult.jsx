@@ -16,8 +16,8 @@ export default function SimpleLookupResult(){
                     <p>{result}</p>
                 </div>
                 <div className={`${style.row}`}>
-                    <button className={style.navLink}><Link to='/'>Home</Link></button>
-                    <button className={style.navLink}><Link to='/simple'>Go Back</Link></button>
+                    <Link to='/' className={`${style.navLink} btn ${style.button}`}>Home</Link>
+                    <Link to='/simple' className={`${style.navLink} btn ${style.button}`}>Go Back</Link>
                 </div>
 
             </div>

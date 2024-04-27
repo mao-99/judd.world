@@ -1,65 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../App';
-import {Permutation} from 'js-combinatorics';
 import style from './simpleLookup.module.css';
-import SimpleLookupResult from './simpleLookupResult';
-import { set } from 'lodash';
 
-export default function SimpleLookup({ allCrimes }){
-    const [selectedCrimes, setSelectedCrimes] = useState([]);
-    const [selectedDegrees, setSelectedDegrees] = useState([]);
+export default function SimpleLookup({ allCrimes, database }){
     const [crimeAndDegreeMap, setCrimeAndDegreeMap] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const [degree, setDegree] = useState('1ST');
     const [formData, setFormData] = useState({age:0, race:'', county:'', crime1:'', crime2:'', crime3:'', crime4:'', degree1:'', degree2:'', degree3:'', degree4:''});
-    const [currentPage, setCurrentPage] = useState(1);
-    const crimesPerPage = 20;
-    const totalPages = Math.ceil(allCrimes.length / crimesPerPage);
 
-    const startIndex = (currentPage - 1) * crimesPerPage;
-    const endIndex = startIndex + crimesPerPage;
-    const crimesForPage = allCrimes.slice(startIndex, endIndex);
-
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
-    }
     const handleChange = (e) => {
         const {name, value} = e.target;
         setFormData({...formData, [name]: value});
     }
-    const handleSelect = (e) => {
-        // console.log(e.target.value);
-        // //console.log(e.target.selectedOptions);
-        // const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
-        // console.log(selectedValues);
-        if (selectedCrimes.includes(e.target.value)) {
-            const updatedCrimes = selectedCrimes.filter(crime => crime !== e.target.value);
-            setSelectedCrimes(updatedCrimes);
-            // console.log(selectedCrimes)
-            // console.log(updatedCrimes)
-            return;
-        }
-        let updatedCrimes = [...selectedCrimes, e.target.value];
-        setSelectedCrimes(updatedCrimes);
-        // console.log(selectedCrimes)
-        // console.log(updatedCrimes)
-        return;
-    }
-    // const handleSelectChange = (e) => {
-    //     const updatedCrimes = [...selectedCrimes];
-    //     const selectedValues = Array.from(e.target.selectedOptions, option => option.value);
-    //     updatedCrimes.push(...selectedValues);
-    //     setSelectedCrimes(updatedCrimes);
-    //     setFormData({...formData, crimeArray: updatedCrimes});
-    // }
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
         let [age, race, county] = [formData.age, formData.race, formData.county];
         let multipleOffense = Object.keys(crimeAndDegreeMap).length > 1 ? true : false;
-
         age = parseInt(age);
         race = race.toUpperCase();
         county = county.toUpperCase();
@@ -87,90 +46,71 @@ export default function SimpleLookup({ allCrimes }){
         const getData = async() => {
             if (age === null && race === null && county === null){
                 
-                const {data, error} = await supabase.from('convictionData').select('lastName, firstName, sentenceDuration, crimeArray, degreeArray').eq('multipleOffense', multipleOffense);
-                const filteredData = data.filter((obj) => {
+                const filteredData = database.filter((obj) => {
                     const sortedCrimes = obj.crimeArray.slice().sort();
                     const sortedDegrees = obj.degreeArray.slice().sort();
                     return (JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
                     JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort()));
                 })
-                if (error){
-                    console.error("Error: ", error);
-                }
+
                 return filteredData;
             }
             if (age === null && race === null && county !== null){
-                const {data, error} = await supabase.from('convictionData').select('lastName, firstName, sentenceDuration, crimeArray, degreeArray').eq('multipleOffense', multipleOffense);
-                const filteredData = data.filter((obj) => {
+                const filteredData = database.filter((obj) => {
                     const sortedCrimes = obj.crimeArray.slice().sort();
                     const sortedDegrees = obj.degreeArray.slice().sort();
-                    return (JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
-                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort()));
+                    return ( (obj.multipleOffense === multipleOffense) && (obj.county === county) && (JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
+                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort())));
                 })
-                if (error){
-                    console.error("Error: ", error);
-                }
+
                 return filteredData;
             }
             if (age === null && race !== null && county === null){
-                const {data, error} = await supabase.from('convictionData').select('lastName, firstName, sentenceDuration, crimeArray, degreeArray').eq('multipleOffense', multipleOffense);
-                const filteredData = data.filter((obj) => {
+                const filteredData = database.filter((obj) => {
                     const sortedCrimes = obj.crimeArray.slice().sort();
                     const sortedDegrees = obj.degreeArray.slice().sort();
-                    return (JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
-                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort()));
+                    return ((obj.race === race) && (obj.multipleOffense === multipleOffense) &&(JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
+                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort())));
                 })
-                if (error){
-                    console.error("Error: ", error);
-                }
+
                 return filteredData;
             }
             if (age === null && race !== null && county !== null){
-                const {data, error} = await supabase.from('convictionData').select('lastName, firstName, sentenceDuration, crimeArray, degreeArray').eq('multipleOffense', multipleOffense);
-                const filteredData = data.filter((obj) => {
+                const filteredData = database.filter((obj) => {
                     const sortedCrimes = obj.crimeArray.slice().sort();
                     const sortedDegrees = obj.degreeArray.slice().sort();
-                    return (JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
-                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort()));
+                    return ( (obj.race === race) && (obj.multipleOffense === multipleOffense) &&(JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
+                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort())));
                 })
-                if (error){
-                    console.error("Error: ", error);
-                }
+
                 return filteredData;
             }
             if (age !== null && race === null && county === null){
-                const {data, error} = await supabase.from('convictionData').select('lastName, firstName, sentenceDuration, crimeArray, degreeArray').eq('multipleOffense', multipleOffense);
-                const filteredData = data.filter((obj) => {
+                const filteredData = database.filter((obj) => {
                     const sortedCrimes = obj.crimeArray.slice().sort();
                     const sortedDegrees = obj.degreeArray.slice().sort();
-                    return (JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
-                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort()));
+                    return ( (obj.age === age) && (obj.multipleOffense === multipleOffense) &&( JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
+                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort())));
                 })
-                if (error){
-                    console.error("Error: ", error);
-                }
+
                 return filteredData;
             }
             if (age !== null && race !== null && county === null){
-                const {data, error} = await supabase.from('convictionData').select('lastName, firstName, sentenceDuration, crimeArray, degreeArray').eq('multipleOffense', multipleOffense);
-                const filteredData = data.filter((obj) => {
+                const filteredData = database.filter((obj) => {
                     const sortedCrimes = obj.crimeArray.slice().sort();
                     const sortedDegrees = obj.degreeArray.slice().sort();
-                    return (JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
-                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort()));
+                    return ( (obj.age === age) && (obj.race === race) && (obj.multipleOffense === multipleOffense) &&(JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
+                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort())));
                 })
-                if (error){
-                    console.error("Error: ", error);
-                }
+
                 return filteredData;
             }
             if (age !== null && race === null && county !== null){
-                const {data, error} = await supabase.from('convictionData').select('lastName, firstName, sentenceDuration, crimeArray, degreeArray').eq('multipleOffense', multipleOffense);
-                const filteredData = data.filter((obj) => {
+                const filteredData = database.filter((obj) => {
                     const sortedCrimes = obj.crimeArray.slice().sort();
                     const sortedDegrees = obj.degreeArray.slice().sort();
-                    return (JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
-                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort()));
+                    return ((obj.county === county) && (boj.age === age)  && (obj.multipleOffense === multipleOffense) &&(JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
+                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort())));
                 })
                 if (error){
                     console.error("Error: ", error);
@@ -178,12 +118,11 @@ export default function SimpleLookup({ allCrimes }){
                 return filteredData;
             }
             if (age !== null && race !== null && county !== null){
-                const {data, error} = await supabase.from('convictionData').select('lastName, firstName, sentenceDuration, crimeArray, degreeArray').eq('multipleOffense', multipleOffense);
-                const filteredData = data.filter((obj) => {
+                const filteredData = database.filter((obj) => {
                     const sortedCrimes = obj.crimeArray.slice().sort();
                     const sortedDegrees = obj.degreeArray.slice().sort();
-                    return (JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
-                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort()));
+                    return ( (obj.age === age) && (obj.county === county) && (obj.race === race) && (obj.multipleOffense === multipleOffense) &&(JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
+                    JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort())));
                 })
                 if (error){
                     console.error("Error: ", error);
@@ -210,10 +149,6 @@ export default function SimpleLookup({ allCrimes }){
     }
     useEffect(() => {
         let [crime1, crime2, crime3, crime4, degree1, degree2, degree3, degree4] = [formData.crime1, formData.crime2, formData.crime3, formData.crime4, formData.degree1, formData.degree2, formData.degree3, formData.degree4];
-        let crimeArray = [crime1, crime2, crime3, crime4];
-        let degreeArray = [degree1, degree2, degree3, degree4];
-        setSelectedCrimes(crimeArray);
-        setSelectedDegrees(degreeArray);
         const testCrimeAndDegreeMap = {};
         for (let i = 0; i < 4; i++){
             if (formData[`crime${i+1}`] !== ""){
@@ -222,7 +157,8 @@ export default function SimpleLookup({ allCrimes }){
                     
                 }
                 else{
-                    testCrimeAndDegreeMap[formData[`crime${i+1}`]] = formData[`degree${i+1}`];               }
+                    testCrimeAndDegreeMap[formData[`crime${i+1}`]] = formData[`degree${i+1}`];
+                }
             }
         }
         setCrimeAndDegreeMap(testCrimeAndDegreeMap);

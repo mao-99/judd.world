@@ -23,7 +23,7 @@ function App() {
   const [crimesAndDegrees, setCrimesAndDegrees] = useState({});
   useEffect(()=>{
     const loadDatabase = async () => {
-      const {data, error} = await supabase.from('convictionData').select('lastName, firstName, sentenceDuration, crimeArray, degreeArray');
+      const {data, error} = await supabase.from('convictionData').select('din, lastName, firstName, sentenceDuration, crimeArray, degreeArray, age, race, multipleOffense, county, status, aggMinSentence, aggMaxSentence');
       if (error){
         console.error("Mr man, stop there: ", error);
         return;
@@ -46,10 +46,10 @@ function App() {
           <SideNav />
           <Routes>
             <Route path='/' element={<Home/>} />
-            <Route path='/simple' element={<SimpleLookup allCrimes={allCrimes} />} />
+            <Route path='/simple' element={<SimpleLookup allCrimes={allCrimes} database={data} />} />
             <Route path='/simpleResults/:result' element={<SimpleLookupResult />} />
             <Route path='/averages' element={<Averages allCrimes={allCrimes}  crimesAndDegrees={crimesAndDegrees} setCrimesAndDegrees={setCrimesAndDegrees}/>} />
-            <Route path='/averages/plot/:filter' element={<Plot crimesAndDegrees={crimesAndDegrees} setCrimesAndDegrees = {crimesAndDegrees} />} />
+            <Route path='/averages/plot/:filter' element={<Plot crimesAndDegrees={crimesAndDegrees} setCrimesAndDegrees = {crimesAndDegrees} database={data}/>} />
           </Routes>
         </div>
       </Router>
