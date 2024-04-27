@@ -3,11 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import style from './simpleLookup.module.css';
 
 export default function SimpleLookup({ allCrimes, database }){
+    const [selectedCrimes, setSelectedCrimes] = useState([]);
+    const [selectedDegrees, setSelectedDegrees] = useState([]);
     const [crimeAndDegreeMap, setCrimeAndDegreeMap] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const [degree, setDegree] = useState('1ST');
     const [formData, setFormData] = useState({age:0, race:'', county:'', crime1:'', crime2:'', crime3:'', crime4:'', degree1:'', degree2:'', degree3:'', degree4:''});
+
 
     const handleChange = (e) => {
         const {name, value} = e.target;
@@ -19,6 +22,7 @@ export default function SimpleLookup({ allCrimes, database }){
 
         let [age, race, county] = [formData.age, formData.race, formData.county];
         let multipleOffense = Object.keys(crimeAndDegreeMap).length > 1 ? true : false;
+
         age = parseInt(age);
         race = race.toUpperCase();
         county = county.toUpperCase();
@@ -35,6 +39,11 @@ export default function SimpleLookup({ allCrimes, database }){
             county = null;
         }
 
+
+        console.log("This is the age", age);
+        console.log("This is the race: ", race);
+        console.log("This is the county: ", county);
+        console.log("This is the multiple offense: ", multipleOffense);
         let crimesFromMap = Object.keys(crimeAndDegreeMap).slice().sort();
         let equivalentDegrees = [];
         crimesFromMap.forEach((crime) => {
@@ -45,14 +54,12 @@ export default function SimpleLookup({ allCrimes, database }){
        
         const getData = async() => {
             if (age === null && race === null && county === null){
-                
                 const filteredData = database.filter((obj) => {
                     const sortedCrimes = obj.crimeArray.slice().sort();
                     const sortedDegrees = obj.degreeArray.slice().sort();
                     return (JSON.stringify(sortedCrimes) === JSON.stringify(crimesFromMap.sort()) &&
                     JSON.stringify(sortedDegrees) === JSON.stringify(equivalentDegrees.sort()));
                 })
-
                 return filteredData;
             }
             if (age === null && race === null && county !== null){
@@ -149,6 +156,10 @@ export default function SimpleLookup({ allCrimes, database }){
     }
     useEffect(() => {
         let [crime1, crime2, crime3, crime4, degree1, degree2, degree3, degree4] = [formData.crime1, formData.crime2, formData.crime3, formData.crime4, formData.degree1, formData.degree2, formData.degree3, formData.degree4];
+        let crimeArray = [crime1, crime2, crime3, crime4];
+        let degreeArray = [degree1, degree2, degree3, degree4];
+        setSelectedCrimes(crimeArray);
+        setSelectedDegrees(degreeArray);
         const testCrimeAndDegreeMap = {};
         for (let i = 0; i < 4; i++){
             if (formData[`crime${i+1}`] !== ""){

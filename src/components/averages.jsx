@@ -6,11 +6,14 @@ import { set } from 'lodash';
 export default function Averages({allCrimes, crimesAndDegrees, setCrimesAndDegrees}) {
 
     const [formData, setFormData] = useState({crime1:'', crime2:'', crime3:'', crime4:'', degree1:'', degree2:'', degree3:'', degree4:'', filter:''});
+    let allFilters = ['age', 'county', 'sex', 'race'];
     const navigate =  useNavigate();
 
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log(crimesAndDegrees);
+        console.log(formData.filter);
         if (formData.filter === "") { formData.filter = "age"; }
         navigate(`/averages/plot/${formData.filter}`)
     }

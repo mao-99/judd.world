@@ -21,7 +21,7 @@ const options = {
       },
       title: {
         display: true,
-        text: 'Average Sentence Durations',
+        text: 'Average Sentence Durations - in months',
       },
     },
 }
@@ -67,18 +67,21 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees, database}) 
             let entrySortedDegrees = entry.degreeArray.sort();
             return ( JSON.stringify(entrySortedCrimes) === JSON.stringify(selectedCrimes) && JSON.stringify(entrySortedDegrees) === JSON.stringify(selectedDegrees));
         })
-        console.log("This shoudl be the filtered data for the plot component: ", testFilteredData);
         setFilteredData(testFilteredData);
     }, [])
 
-
+    //This useEffect is used to update the age ranges when the plotFilter changes
     useEffect(() => {
-
         if (plotFilter === 'age') {
             setShowAgeRanges(true);
         }else{
             setShowAgeRanges(false);
         }
+    }, [plotFilter])
+
+
+    //This useEffect is used to update the plotObject when the filteredData changes
+    useEffect(() => {
         if (plotFilter === 'age') {
             if (selectedAgeRange === '1'){
                 const updatedPlotObject = {}
@@ -310,6 +313,7 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees, database}) 
         }
     }, [filteredData, selectedAgeRange, plotFilter])
 
+    //This useEffect is used to update the plotLabels and plotData when the plotObject changes
     useEffect(() => {
         let myPlotLabels = Object.keys(plotObject);
         let finalPlotData = [];
@@ -332,7 +336,6 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees, database}) 
         plotLabels.length > 0 ? setShowPlot(true) : setShowPlot(false);
     }, [plotObject])
 
-
     return (
         <>
             <div className={`${style.main}`}>
@@ -351,9 +354,16 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees, database}) 
                         })}
                     </div>
                 }
-                {
-
-                }
+                <div className={`${style.crimesDiv}`}>
+                    <h4 className={`${style.crimesDivHeader}`}>Selected crime(s) and degree(s): </h4>
+                    { 
+                        selectedCrimes.map((crime) => (
+                        <div key={crime} className={`${style.crimeDiv}`}>
+                            {crime}  ||  {crimesAndDegrees[crime]}
+                        </div>
+                        ))
+                    }
+                </div>
                 {
                     showPlot && 
                     <Bar data={plotData} options={options}/>
