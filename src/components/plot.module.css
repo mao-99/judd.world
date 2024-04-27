@@ -1,0 +1,56 @@
+.main{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start ;
+    flex: 1;
+    max-width: 80vw;
+    margin-left: auto;
+}
+
+.button{
+    margin: 2rem;
+    width: 160px;
+    margin: 0 auto;
+}
+
+.filterDiv{
+    width: 70%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem auto;
+    padding: 2rem;
+}
+
+.filterLabel{
+    width: 20%;
+}
+
+.ageRangeDiv{
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 1rem auto;
+}
+
+.ageRangeLabel{
+    width: 20%;
+    margin: 1rem;
+}
+
+.ageRangeButton{
+    margin: 2rem;
+    width: 100px;
+    margin: 0 auto;
+}
+
+.selected{
+    border: 3px solid #646cff;
+}

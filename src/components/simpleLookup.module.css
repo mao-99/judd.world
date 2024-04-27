@@ -1,0 +1,97 @@
+.main{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start ;
+    flex: 1;
+    max-width: 80vw;
+    margin-left: auto;
+}
+.header{
+    width: 100%;
+}
+.form{
+    margin: 1.5rem;
+}
+button{
+    width: 160px;
+    margin: 0 auto;
+}
+.crimeDiv{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.formSelect{
+    width: 45%;
+    margin: 1rem;
+    height: inherit;
+}
+.row{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem auto;
+}
+.form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem auto;
+    border: 0.125rem solid white;
+    border-radius: 1rem;
+    padding: 1rem;
+    width: 80%;
+}
+h1{
+    margin: 1rem auto
+}
+.formInput{
+    width: 45%;
+    margin: 1rem;
+}
+.button{
+    margin: 1rem;
+}
+.span{
+    height: 48;
+}
+h3{
+    width: 100%;
+    margin: 0.5rem auto;
+}
+h2{
+    width: 100%;
+    margin-top: 1rem;
+}
+.loadingDiv{
+    height: 100%;
+    width: 100%;
+    margin: 2rem auto;
+}
+.loadingImage{
+    height: 23vh;
+    width: 15vw;
+    margin: 2rem auto;
+}
+.result{
+    min-height: 150px;
+    min-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 3rem auto;
+    border: 0.125rem solid white;
+    border-radius: 1rem;
+    padding: 1rem;
+    width: 50%;
+    height: 40vh;
+}
+.navLink{
+    margin: 1rem;
+}

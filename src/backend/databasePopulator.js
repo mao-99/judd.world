@@ -2,10 +2,11 @@ import { promises as fs} from 'fs';
 import os, { type } from 'os';
 import {parse} from 'csv';
 import { createClient } from '@supabase/supabase-js';
+import { createObjectCsvWriter } from 'csv-writer';
 
 const supabaseURL = process.env.VITE_supabaseURL;
 const supabaseKey = process.env.VITE_supabaseKey;
-const supabase = createClient(supabaseURL, supabaseKey);
+const supabase = createClient("https://mbyzugllucwkehrgjwhr.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ieXp1Z2xsdWN3a2Vocmdqd2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM0MTg3MjgsImV4cCI6MjAyODk5NDcyOH0.r5yTEF7_NvsoGxsNxWmIFTUIxoj6G860tsECBBYhQBY");
 
 function convertToMonths(timeString) {
   const matches = timeString.match(/(\d+) (\w+)/g);
@@ -52,7 +53,35 @@ function getMonthDistance(date1, date2) {
   return totalMonthDifference;
 }
 
-async function readAndParseCSV(){
+
+const csvWriter = createObjectCsvWriter({
+  path: 'dataScrap3.csv',
+  header: [
+    { id: 'din', title: 'din' },
+    { id: 'firstName', title: 'firstName' },
+    { id: 'lastName', title: 'lastName' },
+    { id: 'dob', title: 'dob' },
+    { id: 'age', title: 'age' },
+    { id: 'race', title: 'race' },
+    { id: 'multipleOffense', title: 'multipleOffense' },
+    { id: 'crimeArray', title: 'crimeArray' },
+    { id: 'degreeArray', title: 'degreeArray' },
+    { id: 'status', title: 'status' },
+    { id: 'prison', title: 'prison' },
+    { id: 'county', title: 'county' },
+    { id: 'aggMinSentence', title: 'aggMinSentence' },
+    { id: 'aggMaxSentence', title: 'aggMaxSentence' },
+    { id: 'incarcerationDate', title: 'incarcerationDate' },
+    { id: 'sentenceStart', title: 'sentenceStart' },
+    { id: 'releaseDate', title: 'releaseDate' },
+    { id: 'sentenceDuration', title: 'sentenceDuration' },
+    { id: 'classArray', title: 'classArray' },
+  ],
+})
+
+const readAndParseCSV = async () => {
+  //This is the final data as an array of objects
+  let final = [];
   try{
     
     const content = await fs.readFile('../assets/scrap.csv');
@@ -63,122 +92,163 @@ async function readAndParseCSV(){
         console.error("Error: ", error);
       }
       else {
-        //console.log(records[0])
-        //Things needed: din, first, last, dob, age, race, multipleOffense, crimes, degrees
-        //status, prison, county, aggMinSentence, aggMaxSentence, incarcerationDate, sentenceStart
-        //releaseDate, sentenceDuration, classes
-        let count = 0;
-        records.forEach((record) => {
-          if (count >= 337000){
-            return;
+        console.log(records.length);
+        console.log(typeof(records));
+        Object.entries(records).forEach((key, value) => {
+          //console.log("Key: ", key, "Value: ", value);
+          let [lastName, firstName, din, dob, age, crime, race, status, prison, county, incarcerationDate, sentenceStart, releaseDate, aggMinSentence, aggMaxSentence, ...remaining] = key[1];
+          // console.log("This is the last name: ", lastName);
+          // console.log("This is the first name: ", firstName);
+          // console.log("This is the din: ", din);
+          // console.log("This is the dob: ", dob);
+          // console.log("This is the age: ", age);
+          // console.log("This is the crime: ", crime);
+          // console.log("This is the race: ", race);
+          // console.log("This is the status: ", status);
+          // console.log("This is the prison: ", prison);
+          // console.log("This is the county: ", county);
+          // console.log("This is the incarceration date: ", incarcerationDate);
+          // console.log("This is the sentence start: ", sentenceStart);
+          // console.log("This is the release date: ", releaseDate);
+          // console.log("This is the aggregate min sentence: ", aggMinSentence);
+          // const sentenceDuration = getMonthDistance(new Date(sentenceStart), new Date(releaseDate));
+          // console.log("This is the sentence duration: ", sentenceDuration);
+          dob = new Date(dob).toISOString().split('T')[0] + ' 00:00:00';
+          age = parseInt(age);
+          if (isNaN(age)) {
+            console.error(`Invalid age value: ${age}`);
+            // Skip over the entry
+            age = null; // or return; or break; depending on your loop structure
+
           }
-          console.log(count);
-          // console.log(record)
-          // console.log(typeof(record))
-          count++;
-          // if (count >= 5){
-          //   return;
-          // }
-          var [lastName, firstName, din, dob, age, crime, race, status, prison, county, incarcerationDate, sentenceStart, releaseDate, aggMinSentence, aggMaxSentence, ...remaining] = record;
-          // //console.log(releaseDate);
-          dob = new Date(dob);
-          // // console.log("This is the new date: ", newDate);
-          // // console.log("--------------------------------");
-          // // console.log("This is me cleaning up the crimes and degrees: ");
-          // //Remove nan key value pairs if seen
-          // console.log("Number 1",crime);
-          // console.log("Number 2", typeof(crime));
-          // let crimes = "{}"
+          if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(incarcerationDate)) {
+            incarcerationDate = new Date(incarcerationDate).toISOString().split('T')[0] + ' 00:00:00';
+          } else {
+            // Handle invalid date value
+            console.error(`Invalid date value: ${incarcerationDate}`);
+            incarcerationDate = null; // or some default value
+          }
+          sentenceStart = new Date(sentenceStart).toISOString().split('T')[0] + ' 00:00:00';
+
+          //This removes the nan: nan from the crime column
           let preprocessedCrimes = crime.replace(/, nan: nan/g, '');
-          //Replace single quotes with double quotes for JSON parsing
+
+          //This replaces single quotes with double quotes for JSON parsing
           preprocessedCrimes = preprocessedCrimes.replace(/'/g, '"');
+
+          //This creates a json object from the preprocessed string
           let crimes = JSON.parse(preprocessedCrimes);
-          // console.log("These are the crimes: ", crimes)
-          // console.log(typeof(crimes))
-          var allCrimes = [];
-          var allDegrees = [];
-          var allClasses = [];
-          let multiple;
-          let sentenceDuration;
-          Object.entries(crimes).map(([aCrime, value])=>{
-            //Extract the degree from the end of the initial crime string
-            let degree = aCrime.slice(-3);
-            //console.log(degree);
-            allDegrees.push(degree);
-            //console.log(aCrime.slice(0, -4))
-            //Reassign the crime to not include the degree
-            aCrime = aCrime.slice(0, -4)
-            allCrimes.push(aCrime);
-            //Extracting the crime class
-            //console.log(value);
-            allClasses.push(value);
-            allClasses.length > 1 ? multiple = true : multiple = false;
+          // console.log("This is the json crime after processing and before seperation: ", crimes);
+          // console.log("This is the type of crime: ", typeof(crimes));
+
+          //This seperates the crimes json object into an array of crimes, an array of degrees, and an array of classes
+          let crimeArray = [], degreeArray = [], classArray = [];
+          Object.entries(crimes).map(([key, value]) =>{
+            let degree = key.slice(-3);
+            let crime = key.slice(0, -4);
+            let classType = value;
+            degreeArray.push(degree);
+            crimeArray.push(crime);
+            classArray.push(classType);
+            allCrimes.add(crime);
+            return {crime, degree, classType};
           })
-          //console.log("The length of all crimes", allCrimes.length);
-          //console.log(multiple);
-          //console.log(aggMaxSentence);
-          //console.log(aggMinSentence);
-          //console.log(typeof(aggMaxSentence));
+
+          // This is a test of the previous seperation
+          // console.log("This is the crime array: ", crimeArray);
+          // console.log("This is the degree array: ", degreeArray);
+          // console.log("This is the class array: ", classArray);
+
+          //This uses the length of the crime array to determine if there are multiple crimes committed
+          let multiple = false;
+          crimeArray.length > 1 ? multiple = true : multiple = false;
+
+          //This is used to convert the aggregate sentences to months, from their initial string formats
           aggMaxSentence = convertToMonths(aggMaxSentence);
           aggMinSentence = convertToMonths(aggMinSentence);
-          // console.log("Number 3", typeof(incarcerationDate));
-          incarcerationDate = new Date(incarcerationDate);
-          sentenceStart = new Date(sentenceStart)
-          let nullReleaseDate = new Date('1111-01-01');
-          // // console.log("This is the date: ", defaultReleaseDate)
-          // // console.log(typeof(defaultReleaseDate));
-          // // console.log("This is the date: ", incarcerationDate)
-          // // console.log("This is the type: ", typeof(incarcerationDate))
-          // // console.log("This is the date: ", sentenceStart)
-          // // console.log("This is the type: ", typeof(sentenceStart))
-  
-  
-          // // console.log(allCrimes);
-          // // console.log(allDegrees);
-          // // console.log(allClasses);
-          // // console.log(status);
-          // // console.log(status === 'RELEASED');
-          const dateRegex = /^(\d{1,2}\/\d{1,2}\/\d{2})/;
-          const dateMatch = releaseDate.match(dateRegex);
+          // console.log("This is the aggregate min sentence: ", aggMinSentence);
+          // console.log("This is the aggregate max sentence: ", aggMaxSentence);
+          // console.log("This is the type of aggregate min sentence: ", typeof(aggMinSentence));
+          // console.log("This is the type of aggregate max sentence: ", typeof(aggMaxSentence));
+
+          //This is used to calculate the sentence duration in months by parsing the release date of each record using regex
+          const nullReleaseDate = null; //Create a null date object used to specify that a convict is still in prison or their release date is unknown
+          const dateRegex = /^(\d{1,2}\/\d{1,2}\/\d{2})/; // Regular expression to match the date string in the format MM/DD/YY
+          const dateMatch = releaseDate.match(dateRegex); // Match the date string with the regular expression
           if (dateMatch) {
             const dateString = dateMatch[1]; // Extract the date string
             const dateObject = new Date(dateString); // Create a Date object
-            //console.log(dateObject); // Output: Date object representing 10/31/19
-            releaseDate = dateObject
+            //console.log(dateObject); // Output: Date object
+            releaseDate = dateObject.toISOString().split('T')[0] + ' 00:00:00';; // Set the release date to the date object
           } else{
-            releaseDate = nullReleaseDate;
+            releaseDate = null;
           }
+
+          //Check if a convict is released, if released then set the release date to the date of release, else set the release date to the null date object
           status === 'RELEASED' ? releaseDate = releaseDate : releaseDate = nullReleaseDate;
-          // console.log(releaseDate);
-          // console.log(sentenceStart);
-          status === 'RELEASED' ? sentenceDuration = getMonthDistance(sentenceStart, releaseDate instanceof Date ? releaseDate : nullReleaseDate) : sentenceDuration = 0;
-          const crimesJSON = JSON.stringify(allCrimes);
-          const degreesJSON = JSON.stringify(allDegrees);
-          const classesJSON = JSON.stringify(allClasses);
-          let entry = { din, firstName, lastName, dob, age, race, 'multipleOffense': multiple, 'crime(s)': crimesJSON, 'degree(s)': degreesJSON, status, prison, county, aggMinSentence, aggMaxSentence, incarcerationDate, sentenceStart, releaseDate, sentenceDuration, 'class(es)': classesJSON }
-          // console.log(entry);
-          const insertEntry = async (e) => {
-            const {data, error} = await supabase.from("convictionData").insert([entry]);
-            if (error) {
-              console.error('Error: ', error);
-              return;
-            }
-          }
-          insertEntry();
-          // count++;
-          //console.log(records)
-          // console.log(record);
-          // console.log(typeof(record));
-          
+          //console.log("This is the release date: ", releaseDate);
+
+          //This is used to set the sentence duration of the convict in months. If the convict is still in prison, the sentence duration is set to 0
+          let sentenceDuration;
+          status === 'RELEASED' ? sentenceDuration = getMonthDistance(new Date(sentenceStart), new Date(releaseDate)) : sentenceDuration = 0;
+          //console.log("This is the sentence duration: ", sentenceDuration);
+
+          //This is used to convert the crime array, degree array, and class array to a JSON string formats
+          crimeArray = JSON.stringify(crimeArray);
+          degreeArray = JSON.stringify(degreeArray);
+          classArray = JSON.stringify(classArray);
+
+          //This is used to create an object that will be written to the csv file
+          const entry = {
+            din,
+            firstName,
+            lastName,
+            dob,
+            age,
+            race,
+            'multipleOffense': multiple,
+            crimeArray,
+            degreeArray,
+            status,
+            prison,
+            county,
+            aggMinSentence,
+            aggMaxSentence,
+            incarcerationDate,
+            sentenceStart,
+            releaseDate,
+            sentenceDuration,
+            classArray,
+          };
+          //console.log(entry);
+          // console.log("This is the crime array: ", crimeArray);
+          // console.log("This is the degree array: ", degreeArray);
+          // console.log("This is the class array: ", classArray);
+
+          final.push(entry);
         })
+        console.log("This is the length of the final data: ", final.length);
+        csvWriter.writeRecords(final).then(() => console.log('The CSV file was written successfully'));
+        return final;
+    
       }
     });
-
+    
     //console.log(records);
+    return final;
   }
   catch(error){
     console.error("Error: ", error);
   }
 }
 
-readAndParseCSV();
+const updateFinal = async () =>{
+  const finalData = await readAndParseCSV();
+  //console.log("This is the length of final data: ", finalData.length);
+  return finalData;
+}
+
+// const finalData = await updateFinal();
+//console.log("This is the length of final data outside updateFinal: ", finalData.length);
+
+console.log()

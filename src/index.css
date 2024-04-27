@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Lilita+One&display=swap');
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -12,6 +13,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.lilita-one-regular {
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
 
 a {
   font-weight: 500;
@@ -25,9 +32,11 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  width: 100%;
+  color: #f9f9f9;
+  font-family: "Lilita One", sans-serif;
 }
 
 h1 {
@@ -46,23 +55,23 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
+button:hover{
   border-color: #646cff;
 }
 button:focus,
-button:focus-visible {
+button:focus-visible, .navLink:focus, .navLink:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: #f9f9f9;
+    background-color: #213547;
   }
   a:hover {
     color: #747bff;
   }
-  button {
+  button, .navLink {
     background-color: #f9f9f9;
   }
 }
