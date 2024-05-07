@@ -31,7 +31,7 @@ const options = {
 export default function Plot({crimesAndDegrees, setCrimesAndDegrees, database}) {
     let params = useParams();
     let filter = params.filter;
-    const [plotFilter, setPlotFilter] = useState(filter);
+    const [plotFilter, setPlotFilter] = useState("");
     const [showAgeRanges, setShowAgeRanges] = useState(false);
     const [selectedAgeRange, setSelectedAgeRange] = useState('1');
     const [filteredData, setFilteredData] = useState([]);
@@ -68,6 +68,7 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees, database}) 
             return ( JSON.stringify(entrySortedCrimes) === JSON.stringify(selectedCrimes) && JSON.stringify(entrySortedDegrees) === JSON.stringify(selectedDegrees));
         })
         setFilteredData(testFilteredData);
+        setPlotFilter(filter)
     }, [])
 
     //This useEffect is used to update the age ranges when the plotFilter changes
@@ -319,11 +320,12 @@ export default function Plot({crimesAndDegrees, setCrimesAndDegrees, database}) 
         let finalPlotData = [];
         let plotArrays = Object.values(plotObject);
         plotArrays.map((plotArray) => {
+            //console.log(plotArray)
             let sum = 0;
             plotArray.map((value) => {
                 sum += value;
             })
-            let average = parseInt(sum/plotArray.length);
+            let average = Math.floor(sum/plotArray.length);
             if (isNaN(average)){
                 finalPlotData.push(0);
             }

@@ -6,8 +6,9 @@ export default function SideNav(){
         <>
             <div className={styles.sideNav}>
                 <Link to='/'  className={styles.navLink}>Home</Link>
-                <Link to='/simple'  className={styles.navLink}>Simple Lookup</Link>
-                <Link to='/averages'  className={styles.navLink}>Average Sentences</Link>
+                <Link to='/simple'  className={styles.navLink}>Simple Averages</Link>
+                <Link to='/averages'  className={styles.navLink}>Simple Average Plots</Link>
+                <Link to='/comparison/form'  className={styles.navLink}>Simple Average Comparisons</Link>
             </div>
         </>
     )

@@ -1,0 +1,110 @@
+.main{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start ;
+    flex: 1;
+    max-width: 80vw;
+    margin-left: auto;
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem auto;
+    border: 0.125rem solid white;
+    border-radius: 1rem;
+    padding: 1rem;
+    width: 80%;
+}
+
+.formSelect, .formInput{
+    width: 30%;
+    margin: 1rem;
+    height: inherit;
+}
+
+button{
+    width: 160px;
+    margin: 0 auto;
+}
+
+.button{
+    margin: 1rem;
+}
+
+/* .row{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+} */
+
+.header{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem auto;
+}
+
+/* .formInput {
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex: 1; 
+} */
+
+.formGroup{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+
+.demographicsInput{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    /* width: 80%; */
+}
+
+.crimesInput{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    /* width: 80%; */
+}
+
+.crimeDiv{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    width: 50%;
+}
+
+.formCrimeSelect{
+    width: 40%;
+    margin: 1rem;
+    height: inherit;
+}
+
+.specialButton{
+    width: auto;
+    margin: 1rem auto;
+}
+
+.plot{
+    width: 100%;
+    height: 100%;
+}
