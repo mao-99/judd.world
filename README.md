@@ -1,16 +1,21 @@
 # judd.world
 
-Built by: Mubarak Odufade
+Mission: 
 
-This web app presents statistical information on New York State's conviction data. It was built using scraped conviction data from New York State's Department of Corrections and Community Supervision official website (https://nysdoccslookup.doccs.ny.gov/), and the data presented is real and was scraped circa 2022, thus some of the ages might be off by a year or two. 
+Judd aims to provide easy access to accurate and real local conviction and sentencing data, promoting transparency and accountability in the criminal justice system. By simplifying complex data, Judd enables individuals to understand the nuances of the system, identify biases and disparities, and make informed decisions.
 
-Data Collection Phase: 
-The data was scraped using Python's selenium library, and was normalized using Pandas. I scraped the data, cleaned it up and normalized it using pandas and wrote it into a csv file using a Python library. The scripts I used for this, as well as the csv file, are available at this repository link: https://github.com/mao-99/NYS-DOCCS-Data-Scraper 
-I also have the scripts in the backend folder of this repository, the scripts can be found at : ./src/backend/datascraperWithSelenium.py and ./src/backend/csvCleaner.py
 
-Data Cleaning and Preprocessing:
-After scraping the data into the csv file, I built a Supabase table with all the columns and the attributes each column would have. This is the schema of the table: 
+Stack
 
+    Data Collection and Scraping: Python, Selenium, Pandas
+    Data Preprocessing and Processing: JavaScript, Excel
+    Database and Data Storage: Supabase
+    Web Stack: React, Node, Vite, Bootstrap
+    Data Visualization: React-chartjs-2
+
+Data Collection
+
+Data was scraped from the New York State Department of Corrections and Community Supervision website using Python's Selenium package.
 
 | column_name       | data_type                | character_maximum_length |
 | ----------------- | ------------------------ | ------------------------ |
@@ -37,48 +42,36 @@ After scraping the data into the csv file, I built a Supabase table with all the
 | classArray        | jsonb                    |                          |
 
 
-In order to populate my table with the data, I needed to further clean up the csv file in order to be able to import the data directly into the supabase table by importing it. So I wrote a JS script to parse through the initial csv file and seperate them into each table column, and to further clean up the rows with incorrect/inconsistent data. After processing each line, I added them to dataScrap.csv
-The script and the second csv file can be found at: ./src/backend/databasePopulator.js and ./src/backend/dataScrap.csv respectively.
+Features
+Simple Average
 
+    Calculate average sentence length for a specific profile based on age, race, county, crime type, and degree.
 
-Database Population:
+Simple Average Plots
 
-After getting the csv file in the right format for the supabase table, I imported the csv file into supabase and populated my supabase table with all 337,244 entries. 
+    Select up to four crime types and corresponding degrees.
+    Filter plots by age, county, or race.
+    View average sentence lengths as histograms.
 
-NOTE:
+Simple Average Comparisons
 
-Due to supabase restrictions, I am unable to get all 337,244 entries once and so the visualized data is only a portion of the entire database, presenting data on only 10000 convictions at a time.
-
-
-Time spent: 6 hours spent in total
-
-## Required Features
-
-The following **required** functionality is completed:
-
-- [X] **A create form allows users to add new cremates**
-- [X] **Users can name the crewmate and set the crewmate's attributes by clicking on one of several values**
-- [X] **The site displays a summary page of all the user's added crewmates**
-- [X] **A previously created crewmate can be updated from the crewmate list**
-- [X] **A previously created crewmate can be deleted from the crewmate list**
-- [X] **Each crewmate has a direct, unique link to an info page about them**
-
-The following **optional** features are implemented:
-
-- [ ] A crewmate can be given a category upon creation which restricts their attributes
-- [ ] The site displays summary statistics about a user's crew on their crew page 
-- [ ] The site displays a custom "success" metric about a user's crew which changes the look of the crewmate list
-
-The following **additional** features are implemented:
-
-* [ ] List anything else that you added to improve the site's functionality!
+    Select up to four demographic profiles (age, county, race).
+    View average sentence lengths for crimes that match all selected profiles.
+    Compare average sentences across different demographic profiles.
 
 ## Video Walkthrough
 
-Here's a walkthrough of implemented user stories:
+Here's a walkthrough of each feature:
 
-<img src='https://imgur.com/uMKfOsa.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
+Simple Average:
+<img src='https://imgur.com/OPvAkyc.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
+Simple Average Plot:
+<img src='https://imgur.com/zVHNwsa.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
+Simple Average Comparison: 
+<img src='https://imgur.com/sRzEbSg.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with ScreenToGif(https://www.screentogif.com/) for Windows
 
